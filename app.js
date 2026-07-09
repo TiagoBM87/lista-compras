@@ -2,11 +2,14 @@ const STORAGE_KEY = "lista-compras-items";
 
 const form = document.getElementById("add-form");
 const input = document.getElementById("item-input");
+const qtyInput = document.getElementById("item-qty");
+const unitSelect = document.getElementById("item-unit");
 const list = document.getElementById("list");
 const counter = document.getElementById("counter");
 const emptyState = document.getElementById("empty-state");
 const clearCompletedBtn = document.getElementById("clear-completed");
 const clearAllBtn = document.getElementById("clear-all");
+const suggestItemsBtn = document.getElementById("suggest-items");
 
 let items = loadItems();
 
@@ -19,10 +22,14 @@ form.addEventListener("submit", (event) => {
   items.push({
     id: crypto.randomUUID(),
     text,
+    qty: qtyInput.value || "0",
+    unit: unitSelect.value || "un",
     done: false,
   });
 
   input.value = "";
+  qtyInput.value = "0";
+  unitSelect.value = "un";
   saveAndRender();
   input.focus();
 });
@@ -31,6 +38,8 @@ clearCompletedBtn.addEventListener("click", () => {
   items = items.filter((item) => !item.done);
   saveAndRender();
 });
+
+suggestItemsBtn.addEventListener("click", suggestItems);
 
 clearAllBtn.addEventListener("click", () => {
   if (!items.length) return;
@@ -63,8 +72,33 @@ function getDefaultItems() {
   return defaultTexts.map((text) => ({
     id: crypto.randomUUID(),
     text,
+    qty: "0",
+    unit: "un",
     done: false,
   }));
+}
+
+function suggestItems() {
+  const defaultTexts = [
+    "Arroz", "Feijão", "Leite", "Pão", "Mussarela", "Café",
+    "Banana", "Maçã", "Morango", "Cenoura", "Refrigerante",
+    "Aveia", "Carne", "Verduras", "legumes", "Salgadinho",
+  ];
+  const existingTexts = new Set(items.map((item) => item.text.toLowerCase()));
+
+  defaultTexts.forEach((text) => {
+    if (!existingTexts.has(text.toLowerCase())) {
+      items.push({
+        id: crypto.randomUUID(),
+        text,
+        qty: "0",
+        unit: "un",
+        done: false,
+      });
+    }
+  });
+
+  saveAndRender();
 }
 
 function saveItems() {
@@ -95,6 +129,31 @@ function render() {
     span.className = "item-text";
     span.textContent = item.text;
 
+    const qtySpan = document.createElement("input");
+    qtySpan.type = "number";
+    qtySpan.className = "item-qty";
+    qtySpan.value = item.qty;
+    qtySpan.min = "0";
+    qtySpan.step = "any";
+    qtySpan.addEventListener("change", () => {
+      item.qty = qtySpan.value || "0";
+      saveItems();
+    });
+
+    const unitSpan = document.createElement("select");
+    unitSpan.className = "item-unit";
+    ["un", "g", "kg", "ml", "L"].forEach((u) => {
+      const opt = document.createElement("option");
+      opt.value = u;
+      opt.textContent = u;
+      if (u === item.unit) opt.selected = true;
+      unitSpan.appendChild(opt);
+    });
+    unitSpan.addEventListener("change", () => {
+      item.unit = unitSpan.value;
+      saveItems();
+    });
+
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "remove-btn";
@@ -102,7 +161,7 @@ function render() {
     removeBtn.textContent = "×";
     removeBtn.addEventListener("click", () => removeItem(item.id));
 
-    li.append(checkbox, span, removeBtn);
+    li.append(checkbox, span, qtySpan, unitSpan, removeBtn);
     list.appendChild(li);
   });
 

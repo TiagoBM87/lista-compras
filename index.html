@@ -22,6 +22,18 @@
         <p class="subtitle" id="counter">0 itens pendentes</p>
       </header>
 
+      <footer class="actions">
+        <button type="button" class="btn-secondary" id="suggest-items">
+          Sugerir itens
+        </button>
+        <button type="button" class="btn-secondary" id="clear-completed" disabled>
+          Limpar comprados
+        </button>
+        <button type="button" class="btn-danger" id="clear-all" disabled>
+          Limpar tudo
+        </button>
+      </footer>
+
       <form class="add-form" id="add-form" autocomplete="off">
         <input
           type="text"
@@ -30,21 +42,27 @@
           maxlength="120"
           required
         />
+        <input
+          type="number"
+          id="item-qty"
+          value="0"
+          min="0"
+          step="any"
+          class="qty-input"
+        />
+        <select id="item-unit" class="unit-select">
+          <option value="un">un</option>
+          <option value="gr">gr</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="L">L</option>
+        </select>
         <button type="submit">Adicionar</button>
       </form>
 
       <ul class="list" id="list" aria-live="polite"></ul>
 
       <p class="empty-state" id="empty-state">Sua lista está vazia. Adicione o primeiro item acima.</p>
-
-      <footer class="actions">
-        <button type="button" class="btn-secondary" id="clear-completed" disabled>
-          Limpar comprados
-        </button>
-        <button type="button" class="btn-danger" id="clear-all" disabled>
-          Limpar tudo
-        </button>
-      </footer>
     </main>
 
     <script src="app.js"></script>

@@ -45,13 +45,26 @@ clearAllBtn.addEventListener("click", () => {
 function loadItems() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return [];
+    if (!saved) return getDefaultItems();
 
     const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed : getDefaultItems();
   } catch {
     return [];
   }
+}
+
+function getDefaultItems() {
+  const defaultTexts = [
+    "Arroz", "Feijão", "Leite", "Pão", "Mussarela", "Café",
+    "Banana", "Maçã", "Morango", "Cenoura", "Refrigerante",
+    "Aveia", "Carne", "Verduras", "legumes", "Salgadinho",
+  ];
+  return defaultTexts.map((text) => ({
+    id: crypto.randomUUID(),
+    text,
+    done: false,
+  }));
 }
 
 function saveItems() {
